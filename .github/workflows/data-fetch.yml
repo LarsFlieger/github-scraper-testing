@@ -3,6 +3,7 @@ name: Fetch and Commit Data
 on:
   schedule:
     - cron: '0 * * * *'  # Runs at the start of every hour
+  workflow_dispatch:
 
 jobs:
   fetchData:
