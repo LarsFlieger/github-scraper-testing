@@ -1,0 +1,31 @@
+name: Fetch and Commit Data
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs at the start of every hour
+
+jobs:
+  fetchData:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Fetch Data
+      run: |
+        curl http://ip-api.com/json > response.json
+
+    - name: Get Current Time
+      id: current_time
+      run: echo "::set-output name=time::$(date +'%Y-%m-%dT%H:%M:%SZ')"
+
+    - name: Commit and Push
+      run: |
+        mkdir -p responses
+        mv response.json responses/${{ steps.current_time.outputs.time }}.json
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add responses/*
+        git commit -m "Add response for ${{ steps.current_time.outputs.time }}"
+        git push
