@@ -22,6 +22,8 @@ jobs:
       run: echo "::set-output name=time::$(date +'%Y-%m-%dT%H:%M:%SZ')"
 
     - name: Commit and Push
+      env:
+        ACCESS_TOKEN: ${{ secrets.ACC_TOKEN }}
       run: |
         mkdir -p responses
         mv response.json responses/${{ steps.current_time.outputs.time }}.json
@@ -29,4 +31,4 @@ jobs:
         git config --local user.name "GitHub Action"
         git add responses/*
         git commit -m "Add response for ${{ steps.current_time.outputs.time }}"
-        git push
+        git push --set-upstream https://x-access-token:${ACCESS_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref }}
